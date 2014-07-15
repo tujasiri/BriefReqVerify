@@ -1,0 +1,80 @@
+package com.sample;
+
+import com.sample.BriefVerify;
+import com.sample.MyWorkItemHandler;
+
+import org.jbpm.workflow.instance.WorkflowRuntimeException;
+
+import org.jbpm.test.JbpmJUnitBaseTestCase;
+import org.junit.Test;
+import org.kie.api.runtime.KieSession;
+import org.kie.api.runtime.manager.RuntimeEngine;
+import org.kie.api.runtime.manager.RuntimeManager;
+import org.kie.api.runtime.process.ProcessInstance;
+import org.kie.api.runtime.process.WorkItemHandler;
+
+/**
+ * This is a sample file to test a process.
+ */
+public class ProcessTest extends JbpmJUnitBaseTestCase {
+
+	@Test
+	public void testProcess()  {
+		//RuntimeManager manager = createRuntimeManager("sample.bpmn");
+		
+		System.out.println("right here");
+	
+		RuntimeManager manager = createRuntimeManager("briefverify2.bpmn");
+		
+		RuntimeEngine engine = getRuntimeEngine(null);
+		KieSession ksession = engine.getKieSession();
+		
+		//MyWorkItemHandler wih = new MyWorkItemHandler();
+		
+		
+		try{
+			//ksession.getWorkItemManager().registerWorkItemHandler("Hello",  wih);
+			ksession.getWorkItemManager().registerWorkItemHandler("Hello",  new MyWorkItemHandler());
+		}
+		catch (Exception ex){
+				System.err.println("WorkitemHandler==>"+ex.toString());
+		}
+		System.out.println("before process instance start");
+		
+		
+		System.out.println("Session ID ==>"+ksession.getId());
+		
+		try{
+			ProcessInstance processInstance = ksession.startProcess("com.sample.bpmn.ServiceProcess");
+		}
+			
+		catch(WorkflowRuntimeException e){
+			System.err.println("processInstance Exception ==>"+e.toString());
+			
+		}
+		
+		//System.out.println("Process state=="+processInstance.getState());
+		
+		//ProcessInstance processInstance = ksession.startProcess("ServiceProcess");
+		
+		System.out.println("process instance started");
+		
+		
+		//ProcessInstance processInstance = ksession.startProcess("com.sample.bpmn.briefreqverify");
+		
+		// check whether the process instance has completed successfully:w
+		
+		/*
+		assertProcessInstanceCompleted(processInstance.getId(), ksession);
+		assertNodeTriggered(processInstance.getId(), "Hello");
+		*/
+		
+		manager.disposeRuntimeEngine(engine);
+		manager.close();
+		
+		System.out.println("reached the end...");
+	}
+
+
+
+}
